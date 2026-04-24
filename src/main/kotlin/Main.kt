@@ -1,4 +1,5 @@
 import controllers.WorkoutAPI
+import models.Exercise
 import models.Workout
 import utils.readNextInt
 import utils.readNextLine
@@ -26,6 +27,7 @@ fun mainMenu(): Int {
         |  6) Search workouts by name    |
         |  7) List workouts by type      |
         ----------------------------------
+        |  8) Exercise menu              |
         |  0) Exit                       |
         ----------------------------------
         ==>> 
@@ -45,10 +47,44 @@ fun runMenu() {
             5 -> markWorkoutCompleted()
             6 -> searchWorkouts()
             7 -> listWorkoutsByType()
+            8 -> exerciseMenu()
             0 -> exitApp()
             else -> println("Invalid menu option: $option")
         }
     } while (true)
+}
+
+fun exerciseMenu() {
+    do {
+        val option = readNextInt(
+            """
+                
+            ----------------------------------
+            | EXERCISE MENU                  |
+            ----------------------------------
+            |  1) Add exercise to workout    |
+            |  2) List exercises in workout  |
+            |  3) Update exercise            |
+            |  4) Delete exercise            |
+            |  5) Mark exercise completed    |
+            |  6) Search exercises by name   |
+            |  0) Return to main menu        |
+            ----------------------------------
+            ==>> 
+            """.trimIndent()
+        )
+
+        when (option) {
+            1 -> addExerciseToWorkout()
+            2 -> listExercisesInWorkout()
+            3 -> updateExerciseInWorkout()
+            4 -> deleteExerciseFromWorkout()
+            5 -> markExerciseCompleted()
+            6 -> searchExercisesByName()
+            0 -> println("Returning to main menu")
+            else -> println("Invalid exercise menu option: $option")
+        }
+    } while (option != 0)
 }
 
 fun addWorkout() {
@@ -176,6 +212,139 @@ fun listWorkoutsByType() {
     val filteredWorkouts = workoutAPI.listWorkoutsByType(workoutType)
 
     println(filteredWorkouts)
+}
+
+fun addExerciseToWorkout() {
+    println(workoutAPI.listAllWorkouts())
+
+    if (workoutAPI.numberOfWorkouts() > 0) {
+        val workoutIndex = readNextInt("Enter the workout index to add an exercise to: ")
+
+        if (workoutAPI.isValidIndex(workoutIndex)) {
+            val exerciseName = readNextLine("Enter exercise name: ")
+            val sets = readNextInt("Enter number of sets: ")
+            val reps = readNextInt("Enter number of reps: ")
+            val weightKg = readNextLine("Enter weight in kg: ").toDouble()
+            val category = readNextLine("Enter exercise category: ")
+
+            val isAdded = workoutAPI.addExerciseToWorkout(
+                workoutIndex,
+                Exercise(
+                    exerciseName = exerciseName,
+                    sets = sets,
+                    reps = reps,
+                    weightKg = weightKg,
+                    category = category,
+                    isCompleted = false
+                )
+            )
+
+            if (isAdded) {
+                println("Exercise added successfully")
+            } else {
+                println("Exercise add failed")
+            }
+        } else {
+            println("There is no workout at this index")
+        }
+    }
+}
+
+fun listExercisesInWorkout() {
+    println(workoutAPI.listAllWorkouts())
+
+    if (workoutAPI.numberOfWorkouts() > 0) {
+        val workoutIndex = readNextInt("Enter the workout index to list exercises from: ")
+
+        println(workoutAPI.listExercisesInWorkout(workoutIndex))
+    }
+}
+
+fun updateExerciseInWorkout() {
+    println(workoutAPI.listAllWorkouts())
+
+    if (workoutAPI.numberOfWorkouts() > 0) {
+        val workoutIndex = readNextInt("Enter the workout index: ")
+
+        println(workoutAPI.listExercisesInWorkout(workoutIndex))
+
+        val exerciseIndex = readNextInt("Enter the exercise index to update: ")
+
+        val exerciseName = readNextLine("Enter updated exercise name: ")
+        val sets = readNextInt("Enter updated number of sets: ")
+        val reps = readNextInt("Enter updated number of reps: ")
+        val weightKg = readNextLine("Enter updated weight in kg: ").toDouble()
+        val category = readNextLine("Enter updated exercise category: ")
+        val isCompleted = readNextLine("Is the exercise completed? yes/no: ").equals("yes", ignoreCase = true)
+
+        val isUpdated = workoutAPI.updateExerciseInWorkout(
+            workoutIndex,
+            exerciseIndex,
+            Exercise(
+                exerciseName = exerciseName,
+                sets = sets,
+                reps = reps,
+                weightKg = weightKg,
+                category = category,
+                isCompleted = isCompleted
+            )
+        )
+
+        if (isUpdated) {
+            println("Exercise updated successfully")
+        } else {
+            println("Exercise update failed")
+        }
+    }
+}
+
+fun deleteExerciseFromWorkout() {
+    println(workoutAPI.listAllWorkouts())
+
+    if (workoutAPI.numberOfWorkouts() > 0) {
+        val workoutIndex = readNextInt("Enter the workout index: ")
+
+        println(workoutAPI.listExercisesInWorkout(workoutIndex))
+
+        val exerciseIndex = readNextInt("Enter the exercise index to delete: ")
+
+        val deletedExercise = workoutAPI.deleteExerciseFromWorkout(workoutIndex, exerciseIndex)
+
+        if (deletedExercise != null) {
+            println("Deleted exercise: ${deletedExercise.exerciseName}")
+        } else {
+            println("Exercise delete failed")
+        }
+    }
+}
+
+fun markExerciseCompleted() {
+    println(workoutAPI.listAllWorkouts())
+
+    if (workoutAPI.numberOfWorkouts() > 0) {
+        val workoutIndex = readNextInt("Enter the workout index: ")
+
+        println(workoutAPI.listExercisesInWorkout(workoutIndex))
+
+        val exerciseIndex = readNextInt("Enter the exercise index to mark completed: ")
+
+        if (workoutAPI.markExerciseCompleted(workoutIndex, exerciseIndex)) {
+            println("Exercise marked as completed")
+        } else {
+            println("No exercise found at this index")
+        }
+    }
+}
+
+fun searchExercisesByName() {
+    println(workoutAPI.listAllWorkouts())
+
+    if (workoutAPI.numberOfWorkouts() > 0) {
+        val workoutIndex = readNextInt("Enter the workout index to search exercises in: ")
+        val searchName = readNextLine("Enter exercise name to search by: ")
+
+        println(workoutAPI.searchExercisesByName(workoutIndex, searchName))
+    }
 }
 
 fun exitApp() {
