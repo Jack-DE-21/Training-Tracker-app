@@ -1,5 +1,6 @@
 package controllers
 
+import models.Exercise
 import models.Workout
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -202,6 +203,178 @@ class WorkoutAPITest {
             assertNull(populatedWorkouts!!.findWorkout(-1))
             assertNull(populatedWorkouts!!.findWorkout(4))
             assertNull(emptyWorkouts!!.findWorkout(0))
+        }
+    }
+
+    @Nested
+    inner class UpdateWorkout {
+
+        @Test
+        fun `updating a workout that exists returns true and updates details`() {
+            val updatedWorkout = Workout(
+                "Updated Push Day",
+                "30-04-2026",
+                "Hypertrophy",
+                75,
+                true
+            )
+
+            assertTrue(populatedWorkouts!!.updateWorkout(0, updatedWorkout))
+            assertEquals("Updated Push Day", populatedWorkouts!!.findWorkout(0)!!.workoutName)
+            assertEquals("30-04-2026", populatedWorkouts!!.findWorkout(0)!!.workoutDate)
+            assertEquals("Hypertrophy", populatedWorkouts!!.findWorkout(0)!!.workoutType)
+            assertEquals(75, populatedWorkouts!!.findWorkout(0)!!.durationMinutes)
+            assertTrue(populatedWorkouts!!.findWorkout(0)!!.isCompleted)
+        }
+
+        @Test
+        fun `updating a workout that does not exist returns false`() {
+            val updatedWorkout = Workout(
+                "Updated Workout",
+                "30-04-2026",
+                "Strength",
+                45,
+                false
+            )
+
+            assertFalse(emptyWorkouts!!.updateWorkout(0, updatedWorkout))
+            assertFalse(populatedWorkouts!!.updateWorkout(-1, updatedWorkout))
+            assertFalse(populatedWorkouts!!.updateWorkout(4, updatedWorkout))
+        }
+    }
+
+    @Nested
+    inner class CompleteWorkout {
+
+        @Test
+        fun `markWorkoutCompleted returns true when workout exists`() {
+            assertFalse(populatedWorkouts!!.findWorkout(0)!!.isCompleted)
+
+            assertTrue(populatedWorkouts!!.markWorkoutCompleted(0))
+
+            assertTrue(populatedWorkouts!!.findWorkout(0)!!.isCompleted)
+        }
+
+        @Test
+        fun `markWorkoutCompleted returns false when workout does not exist`() {
+            assertFalse(emptyWorkouts!!.markWorkoutCompleted(0))
+            assertFalse(populatedWorkouts!!.markWorkoutCompleted(-1))
+            assertFalse(populatedWorkouts!!.markWorkoutCompleted(4))
+        }
+    }
+
+    @Nested
+    inner class WorkoutExercises {
+
+        @Test
+        fun `addExerciseToWorkout adds exercise when workout exists`() {
+            val exercise = Exercise("Bench Press", 3, 10, 60.0, "Chest")
+
+            assertTrue(populatedWorkouts!!.addExerciseToWorkout(0, exercise))
+            assertEquals(1, populatedWorkouts!!.numberOfExercisesInWorkout(0))
+            assertTrue(populatedWorkouts!!.listExercisesInWorkout(0).contains("Bench Press"))
+        }
+
+        @Test
+        fun `addExerciseToWorkout returns false when workout does not exist`() {
+            val exercise = Exercise("Bench Press", 3, 10, 60.0, "Chest")
+
+            assertFalse(emptyWorkouts!!.addExerciseToWorkout(0, exercise))
+            assertFalse(populatedWorkouts!!.addExerciseToWorkout(-1, exercise))
+            assertFalse(populatedWorkouts!!.addExerciseToWorkout(4, exercise))
+        }
+
+        @Test
+        fun `numberOfExercisesInWorkout returns correct number when workout exists`() {
+            val benchPress = Exercise("Bench Press", 3, 10, 60.0, "Chest")
+            val shoulderPress = Exercise("Shoulder Press", 3, 8, 35.0, "Shoulders")
+
+            populatedWorkouts!!.addExerciseToWorkout(0, benchPress)
+            populatedWorkouts!!.addExerciseToWorkout(0, shoulderPress)
+
+            assertEquals(2, populatedWorkouts!!.numberOfExercisesInWorkout(0))
+        }
+
+        @Test
+        fun `numberOfExercisesInWorkout returns minus one when workout does not exist`() {
+            assertEquals(-1, emptyWorkouts!!.numberOfExercisesInWorkout(0))
+            assertEquals(-1, populatedWorkouts!!.numberOfExercisesInWorkout(-1))
+            assertEquals(-1, populatedWorkouts!!.numberOfExercisesInWorkout(4))
+        }
+
+        @Test
+        fun `listExercisesInWorkout returns message when workout does not exist`() {
+            assertEquals("Workout not found", emptyWorkouts!!.listExercisesInWorkout(0))
+            assertEquals("Workout not found", populatedWorkouts!!.listExercisesInWorkout(-1))
+            assertEquals("Workout not found", populatedWorkouts!!.listExercisesInWorkout(4))
+        }
+
+        @Test
+        fun `listExercisesInWorkout returns message when workout has no exercises`() {
+            assertEquals("No exercises stored in this workout", populatedWorkouts!!.listExercisesInWorkout(0))
+        }
+
+        @Test
+        fun `listExercisesInWorkout returns exercises when workout has exercises`() {
+            val benchPress = Exercise("Bench Press", 3, 10, 60.0, "Chest")
+            val tricepDip = Exercise("Tricep Dip", 3, 12, 0.0, "Arms")
+
+            populatedWorkouts!!.addExerciseToWorkout(0, benchPress)
+            populatedWorkouts!!.addExerciseToWorkout(0, tricepDip)
+
+            val exerciseList = populatedWorkouts!!.listExercisesInWorkout(0)
+
+            assertTrue(exerciseList.contains("Bench Press"))
+            assertTrue(exerciseList.contains("Tricep Dip"))
+        }
+
+        @Test
+        fun `findExercise returns exercise when indexes are valid`() {
+            val benchPress = Exercise("Bench Press", 3, 10, 60.0, "Chest")
+
+            populatedWorkouts!!.addExerciseToWorkout(0, benchPress)
+
+            assertEquals(benchPress, populatedWorkouts!!.findExercise(0, 0))
+        }
+
+        @Test
+        fun `findExercise returns null when indexes are invalid`() {
+            val benchPress = Exercise("Bench Press", 3, 10, 60.0, "Chest")
+
+            populatedWorkouts!!.addExerciseToWorkout(0, benchPress)
+
+            assertNull(populatedWorkouts!!.findExercise(0, -1))
+            assertNull(populatedWorkouts!!.findExercise(0, 1))
+            assertNull(populatedWorkouts!!.findExercise(-1, 0))
+            assertNull(populatedWorkouts!!.findExercise(4, 0))
+            assertNull(emptyWorkouts!!.findExercise(0, 0))
+        }
+
+        @Test
+        fun `deleteExerciseFromWorkout deletes exercise when indexes are valid`() {
+            val benchPress = Exercise("Bench Press", 3, 10, 60.0, "Chest")
+
+            populatedWorkouts!!.addExerciseToWorkout(0, benchPress)
+
+            assertEquals(1, populatedWorkouts!!.numberOfExercisesInWorkout(0))
+
+            val deletedExercise = populatedWorkouts!!.deleteExerciseFromWorkout(0, 0)
+
+            assertEquals(benchPress, deletedExercise)
+            assertEquals(0, populatedWorkouts!!.numberOfExercisesInWorkout(0))
+        }
+
+        @Test
+        fun `deleteExerciseFromWorkout returns null when indexes are invalid`() {
+            val benchPress = Exercise("Bench Press", 3, 10, 60.0, "Chest")
+
+            populatedWorkouts!!.addExerciseToWorkout(0, benchPress)
+
+            assertNull(populatedWorkouts!!.deleteExerciseFromWorkout(0, -1))
+            assertNull(populatedWorkouts!!.deleteExerciseFromWorkout(0, 1))
+            assertNull(populatedWorkouts!!.deleteExerciseFromWorkout(-1, 0))
+            assertNull(populatedWorkouts!!.deleteExerciseFromWorkout(4, 0))
+            assertNull(emptyWorkouts!!.deleteExerciseFromWorkout(0, 0))
         }
     }
 
