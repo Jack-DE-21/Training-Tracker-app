@@ -206,6 +206,63 @@ class WorkoutAPITest {
     }
 
     @Nested
+    inner class UpdateWorkout {
+
+        @Test
+        fun `updating a workout that exists returns true and updates details`() {
+            val updatedWorkout = Workout(
+                "Updated Push Day",
+                "30-04-2026",
+                "Hypertrophy",
+                75,
+                true
+            )
+
+            assertTrue(populatedWorkouts!!.updateWorkout(0, updatedWorkout))
+            assertEquals("Updated Push Day", populatedWorkouts!!.findWorkout(0)!!.workoutName)
+            assertEquals("30-04-2026", populatedWorkouts!!.findWorkout(0)!!.workoutDate)
+            assertEquals("Hypertrophy", populatedWorkouts!!.findWorkout(0)!!.workoutType)
+            assertEquals(75, populatedWorkouts!!.findWorkout(0)!!.durationMinutes)
+            assertTrue(populatedWorkouts!!.findWorkout(0)!!.isCompleted)
+        }
+
+        @Test
+        fun `updating a workout that does not exist returns false`() {
+            val updatedWorkout = Workout(
+                "Updated Workout",
+                "30-04-2026",
+                "Strength",
+                45,
+                false
+            )
+
+            assertFalse(emptyWorkouts!!.updateWorkout(0, updatedWorkout))
+            assertFalse(populatedWorkouts!!.updateWorkout(-1, updatedWorkout))
+            assertFalse(populatedWorkouts!!.updateWorkout(4, updatedWorkout))
+        }
+    }
+
+    @Nested
+    inner class CompleteWorkout {
+
+        @Test
+        fun `markWorkoutCompleted returns true when workout exists`() {
+            assertFalse(populatedWorkouts!!.findWorkout(0)!!.isCompleted)
+
+            assertTrue(populatedWorkouts!!.markWorkoutCompleted(0))
+
+            assertTrue(populatedWorkouts!!.findWorkout(0)!!.isCompleted)
+        }
+
+        @Test
+        fun `markWorkoutCompleted returns false when workout does not exist`() {
+            assertFalse(emptyWorkouts!!.markWorkoutCompleted(0))
+            assertFalse(populatedWorkouts!!.markWorkoutCompleted(-1))
+            assertFalse(populatedWorkouts!!.markWorkoutCompleted(4))
+        }
+    }
+
+    @Nested
     inner class DeleteWorkout {
 
         @Test
