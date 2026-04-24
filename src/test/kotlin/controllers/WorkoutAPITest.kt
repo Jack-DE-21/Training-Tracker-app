@@ -83,6 +83,93 @@ class WorkoutAPITest {
             assertTrue(workoutList.contains("Leg Day"))
             assertTrue(workoutList.contains("Cardio Day"))
         }
+
+        @Test
+        fun `listCompletedWorkouts returns no completed workouts when ArrayList is empty`() {
+            assertEquals("No completed workouts stored", emptyWorkouts!!.listCompletedWorkouts())
+        }
+
+        @Test
+        fun `listCompletedWorkouts returns completed workouts when they exist`() {
+            val completedWorkouts = populatedWorkouts!!.listCompletedWorkouts()
+
+            assertTrue(completedWorkouts.contains("Leg Day"))
+            assertFalse(completedWorkouts.contains("Push Day"))
+            assertFalse(completedWorkouts.contains("Pull Day"))
+            assertFalse(completedWorkouts.contains("Cardio Day"))
+        }
+
+        @Test
+        fun `listIncompleteWorkouts returns no incomplete workouts when ArrayList is empty`() {
+            assertEquals("No incomplete workouts stored", emptyWorkouts!!.listIncompleteWorkouts())
+        }
+
+        @Test
+        fun `listIncompleteWorkouts returns incomplete workouts when they exist`() {
+            val incompleteWorkouts = populatedWorkouts!!.listIncompleteWorkouts()
+
+            assertTrue(incompleteWorkouts.contains("Push Day"))
+            assertTrue(incompleteWorkouts.contains("Pull Day"))
+            assertTrue(incompleteWorkouts.contains("Cardio Day"))
+            assertFalse(incompleteWorkouts.contains("Leg Day"))
+        }
+
+        @Test
+        fun `listWorkoutsByType returns matching workouts when type exists`() {
+            val strengthWorkouts = populatedWorkouts!!.listWorkoutsByType("Strength")
+
+            assertTrue(strengthWorkouts.contains("Push Day"))
+            assertTrue(strengthWorkouts.contains("Pull Day"))
+            assertTrue(strengthWorkouts.contains("Leg Day"))
+            assertFalse(strengthWorkouts.contains("Cardio Day"))
+        }
+
+        @Test
+        fun `listWorkoutsByType ignores case when matching type`() {
+            val cardioWorkouts = populatedWorkouts!!.listWorkoutsByType("cardio")
+
+            assertTrue(cardioWorkouts.contains("Cardio Day"))
+            assertFalse(cardioWorkouts.contains("Push Day"))
+        }
+
+        @Test
+        fun `listWorkoutsByType returns message when type does not exist`() {
+            assertEquals(
+                "No workouts stored with type: Swimming",
+                populatedWorkouts!!.listWorkoutsByType("Swimming")
+            )
+        }
+    }
+
+    @Nested
+    inner class SearchWorkouts {
+
+        @Test
+        fun `searchWorkoutsByName returns matching workouts when name exists`() {
+            val searchResults = populatedWorkouts!!.searchWorkoutsByName("Push")
+
+            assertTrue(searchResults.contains("Push Day"))
+            assertFalse(searchResults.contains("Pull Day"))
+            assertFalse(searchResults.contains("Leg Day"))
+            assertFalse(searchResults.contains("Cardio Day"))
+        }
+
+        @Test
+        fun `searchWorkoutsByName ignores case when searching`() {
+            val searchResults = populatedWorkouts!!.searchWorkoutsByName("push")
+
+            assertTrue(searchResults.contains("Push Day"))
+        }
+
+        @Test
+        fun `searchWorkoutsByName returns no workouts found when no match exists`() {
+            assertEquals("No workouts found", populatedWorkouts!!.searchWorkoutsByName("Swim"))
+        }
+
+        @Test
+        fun `searchWorkoutsByName returns no workouts found when ArrayList is empty`() {
+            assertEquals("No workouts found", emptyWorkouts!!.searchWorkoutsByName("Push"))
+        }
     }
 
     @Nested
