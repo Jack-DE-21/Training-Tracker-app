@@ -42,8 +42,8 @@ class WorkoutAPI {
     }
 
     fun listWorkoutsByType(workoutType: String): String {
-        val matchingWorkouts = workouts.filter {
-                workout -> workout.workoutType.equals(workoutType, ignoreCase = true)
+        val matchingWorkouts = workouts.filter { workout ->
+            workout.workoutType.equals(workoutType, ignoreCase = true)
         }
 
         return if (matchingWorkouts.isEmpty()) {
@@ -54,8 +54,8 @@ class WorkoutAPI {
     }
 
     fun searchWorkoutsByName(searchString: String): String {
-        val matchingWorkouts = workouts.filter {
-                workout -> workout.workoutName.contains(searchString, ignoreCase = true)
+        val matchingWorkouts = workouts.filter { workout ->
+            workout.workoutName.contains(searchString, ignoreCase = true)
         }
 
         return if (matchingWorkouts.isEmpty()) {
@@ -70,6 +70,32 @@ class WorkoutAPI {
             workouts[index]
         } else {
             null
+        }
+    }
+
+    fun updateWorkout(indexToUpdate: Int, workout: Workout): Boolean {
+        val foundWorkout = findWorkout(indexToUpdate)
+
+        return if (foundWorkout != null) {
+            foundWorkout.workoutName = workout.workoutName
+            foundWorkout.workoutDate = workout.workoutDate
+            foundWorkout.workoutType = workout.workoutType
+            foundWorkout.durationMinutes = workout.durationMinutes
+            foundWorkout.isCompleted = workout.isCompleted
+            true
+        } else {
+            false
+        }
+    }
+
+    fun markWorkoutCompleted(indexToComplete: Int): Boolean {
+        val foundWorkout = findWorkout(indexToComplete)
+
+        return if (foundWorkout != null) {
+            foundWorkout.isCompleted = true
+            true
+        } else {
+            false
         }
     }
 
