@@ -5,7 +5,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class WorkoutTest {
+
 
     @Test
     fun `workout stores correct details`() {
