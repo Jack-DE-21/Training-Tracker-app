@@ -1,11 +1,13 @@
 import controllers.WorkoutAPI
 import models.Exercise
 import models.Workout
+import persistence.XMLSerializer
 import utils.readNextInt
 import utils.readNextLine
+import java.io.File
 import kotlin.system.exitProcess
 
-private val workoutAPI = WorkoutAPI()
+private val workoutAPI = WorkoutAPI(XMLSerializer(File("workouts.xml")))
 
 fun main() {
     runMenu()
@@ -28,6 +30,11 @@ fun mainMenu(): Int {
         |  7) List workouts by type      |
         ----------------------------------
         |  8) Exercise menu              |
+        ----------------------------------
+        | STORAGE MENU                   |
+        | 20) Save workouts              |
+        | 21) Load workouts              |
+        ----------------------------------
         |  0) Exit                       |
         ----------------------------------
         ==>> 
@@ -48,6 +55,8 @@ fun runMenu() {
             6 -> searchWorkouts()
             7 -> listWorkoutsByType()
             8 -> exerciseMenu()
+            20 -> save()
+            21 -> load()
             0 -> exitApp()
             else -> println("Invalid menu option: $option")
         }
@@ -347,7 +356,26 @@ fun searchExercisesByName() {
     }
 }
 
+fun save() {
+    try {
+        workoutAPI.store()
+        println("Workouts saved successfully")
+    } catch (e: Exception) {
+        System.err.println("Error writing to file: $e")
+    }
+}
+
+fun load() {
+    try {
+        workoutAPI.load()
+        println("Workouts loaded successfully")
+    } catch (e: Exception) {
+        System.err.println("Error reading from file: $e")
+    }
+}
+
 fun exitApp() {
     println("Exiting app")
     exitProcess(0)
 }
+

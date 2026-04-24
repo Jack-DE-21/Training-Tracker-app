@@ -2,11 +2,28 @@ package controllers
 
 import models.Exercise
 import models.Workout
+import persistence.Serializer
 import utils.isValidListIndex
 
-class WorkoutAPI {
+class WorkoutAPI(private var serializer: Serializer) {
 
     private var workouts = ArrayList<Workout>()
+
+    @Throws(Exception::class)
+    fun load() {
+        val loadedWorkouts = serializer.read()
+
+        workouts = if (loadedWorkouts != null) {
+            loadedWorkouts as ArrayList<Workout>
+        } else {
+            ArrayList()
+        }
+    }
+
+    @Throws(Exception::class)
+    fun store() {
+        serializer.write(workouts)
+    }
 
     fun add(workout: Workout): Boolean {
         return workouts.add(workout)
