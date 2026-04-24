@@ -4,6 +4,9 @@ import models.Workout
 import persistence.XMLSerializer
 import utils.readNextInt
 import utils.readNextLine
+import utils.isValidDoubleRange
+import utils.isValidRange
+import utils.readNextDouble
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -100,7 +103,7 @@ fun addWorkout() {
     val workoutName = readNextLine("Enter workout name: ")
     val workoutDate = readNextLine("Enter workout date: ")
     val workoutType = readNextLine("Enter workout type: ")
-    val durationMinutes = readNextInt("Enter duration in minutes: ")
+    val durationMinutes = readValidDuration("Enter duration in minutes: ")
 
     val isAdded = workoutAPI.add(
         Workout(
@@ -156,7 +159,7 @@ fun updateWorkout() {
             val workoutName = readNextLine("Enter updated workout name: ")
             val workoutDate = readNextLine("Enter updated workout date: ")
             val workoutType = readNextLine("Enter updated workout type: ")
-            val durationMinutes = readNextInt("Enter updated duration in minutes: ")
+            val durationMinutes = readValidDuration("Enter updated duration in minutes: ")
 
             val isUpdated = workoutAPI.updateWorkout(
                 indexToUpdate,
@@ -231,9 +234,9 @@ fun addExerciseToWorkout() {
 
         if (workoutAPI.isValidIndex(workoutIndex)) {
             val exerciseName = readNextLine("Enter exercise name: ")
-            val sets = readNextInt("Enter number of sets: ")
-            val reps = readNextInt("Enter number of reps: ")
-            val weightKg = readNextLine("Enter weight in kg: ").toDouble()
+            val sets = readValidSets("Enter number of sets: ")
+            val reps = readValidReps("Enter number of reps: ")
+            val weightKg = readValidWeight("Enter weight in kg: ")
             val category = readNextLine("Enter exercise category: ")
 
             val isAdded = workoutAPI.addExerciseToWorkout(
@@ -280,9 +283,9 @@ fun updateExerciseInWorkout() {
         val exerciseIndex = readNextInt("Enter the exercise index to update: ")
 
         val exerciseName = readNextLine("Enter updated exercise name: ")
-        val sets = readNextInt("Enter updated number of sets: ")
-        val reps = readNextInt("Enter updated number of reps: ")
-        val weightKg = readNextLine("Enter updated weight in kg: ").toDouble()
+        val sets = readValidSets("Enter updated number of sets: ")
+        val reps = readValidReps("Enter updated number of reps: ")
+        val weightKg = readValidWeight("Enter updated weight in kg: ")
         val category = readNextLine("Enter updated exercise category: ")
         val isCompleted = readNextLine("Is the exercise completed? yes/no: ").equals("yes", ignoreCase = true)
 
@@ -355,6 +358,54 @@ fun searchExercisesByName() {
         println(workoutAPI.searchExercisesByName(workoutIndex, searchName))
     }
 }
+
+
+fun readValidDuration(prompt: String): Int {
+    var duration = readNextInt(prompt)
+
+    while (!isValidRange(duration, 1, 500)) {
+        println("Duration must be between 1 and 500 minutes")
+        duration = readNextInt(prompt)
+    }
+
+    return duration
+}
+
+fun readValidSets(prompt: String): Int {
+    var sets = readNextInt(prompt)
+
+    while (!isValidRange(sets, 1, 20)) {
+        println("Sets must be between 1 and 20")
+        sets = readNextInt(prompt)
+    }
+
+    return sets
+}
+
+fun readValidReps(prompt: String): Int {
+    var reps = readNextInt(prompt)
+
+    while (!isValidRange(reps, 1, 500)) {
+        println("Reps must be between 1 and 500")
+        reps = readNextInt(prompt)
+    }
+
+    return reps
+}
+
+fun readValidWeight(prompt: String): Double {
+    var weight = readNextDouble(prompt)
+
+    while (!isValidDoubleRange(weight, 0.0, 500.0)) {
+        println("Weight must be between 0kg and 500kg")
+        weight = readNextDouble(prompt)
+    }
+
+    return weight
+}
+
+
+
 
 fun save() {
     try {

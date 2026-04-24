@@ -16,3 +16,15 @@ fun readNextInt(prompt: String?): Int {
         }
     }
 }
+
+fun readNextDouble(prompt: String?): Double {
+    print(prompt)
+
+    while (true) {
+        try {
+            return readln().toDouble()
+        } catch (e: NumberFormatException) {
+            print("Please enter a valid decimal number: ")
+        }
+    }
+}
