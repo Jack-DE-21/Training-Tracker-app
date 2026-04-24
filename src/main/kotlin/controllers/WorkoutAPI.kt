@@ -151,6 +151,51 @@ class WorkoutAPI {
         }
     }
 
+    fun updateExerciseInWorkout(workoutIndex: Int, exerciseIndex: Int, exercise: Exercise): Boolean {
+        val foundExercise = findExercise(workoutIndex, exerciseIndex)
+
+        return if (foundExercise != null) {
+            foundExercise.exerciseName = exercise.exerciseName
+            foundExercise.sets = exercise.sets
+            foundExercise.reps = exercise.reps
+            foundExercise.weightKg = exercise.weightKg
+            foundExercise.category = exercise.category
+            foundExercise.isCompleted = exercise.isCompleted
+            true
+        } else {
+            false
+        }
+    }
+
+    fun markExerciseCompleted(workoutIndex: Int, exerciseIndex: Int): Boolean {
+        val foundExercise = findExercise(workoutIndex, exerciseIndex)
+
+        return if (foundExercise != null) {
+            foundExercise.isCompleted = true
+            true
+        } else {
+            false
+        }
+    }
+
+    fun searchExercisesByName(workoutIndex: Int, searchString: String): String {
+        val foundWorkout = findWorkout(workoutIndex)
+
+        return if (foundWorkout == null) {
+            "Workout not found"
+        } else {
+            val matchingExercises = foundWorkout.exercises.filter { exercise ->
+                exercise.exerciseName.contains(searchString, ignoreCase = true)
+            }
+
+            if (matchingExercises.isEmpty()) {
+                "No exercises found"
+            } else {
+                formatExerciseListString(matchingExercises)
+            }
+        }
+    }
+
     fun deleteExerciseFromWorkout(workoutIndex: Int, exerciseIndex: Int): Exercise? {
         val foundWorkout = findWorkout(workoutIndex)
         val foundExercise = findExercise(workoutIndex, exerciseIndex)

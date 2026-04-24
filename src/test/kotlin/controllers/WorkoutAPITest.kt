@@ -379,6 +379,110 @@ class WorkoutAPITest {
     }
 
     @Nested
+    inner class UpdateWorkoutExercises {
+
+        @Test
+        fun `updateExerciseInWorkout updates exercise when indexes are valid`() {
+            val benchPress = Exercise("Bench Press", 3, 10, 60.0, "Chest")
+            val updatedExercise = Exercise("Incline Bench Press", 4, 8, 65.0, "Chest", true)
+
+            populatedWorkouts!!.addExerciseToWorkout(0, benchPress)
+
+            assertTrue(populatedWorkouts!!.updateExerciseInWorkout(0, 0, updatedExercise))
+
+            val result = populatedWorkouts!!.findExercise(0, 0)
+
+            assertEquals("Incline Bench Press", result!!.exerciseName)
+            assertEquals(4, result.sets)
+            assertEquals(8, result.reps)
+            assertEquals(65.0, result.weightKg)
+            assertEquals("Chest", result.category)
+            assertTrue(result.isCompleted)
+        }
+
+        @Test
+        fun `updateExerciseInWorkout returns false when indexes are invalid`() {
+            val benchPress = Exercise("Bench Press", 3, 10, 60.0, "Chest")
+            val updatedExercise = Exercise("Incline Bench Press", 4, 8, 65.0, "Chest", true)
+
+            populatedWorkouts!!.addExerciseToWorkout(0, benchPress)
+
+            assertFalse(populatedWorkouts!!.updateExerciseInWorkout(0, -1, updatedExercise))
+            assertFalse(populatedWorkouts!!.updateExerciseInWorkout(0, 1, updatedExercise))
+            assertFalse(populatedWorkouts!!.updateExerciseInWorkout(-1, 0, updatedExercise))
+            assertFalse(populatedWorkouts!!.updateExerciseInWorkout(4, 0, updatedExercise))
+            assertFalse(emptyWorkouts!!.updateExerciseInWorkout(0, 0, updatedExercise))
+        }
+
+        @Test
+        fun `markExerciseCompleted marks exercise completed when indexes are valid`() {
+            val benchPress = Exercise("Bench Press", 3, 10, 60.0, "Chest")
+
+            populatedWorkouts!!.addExerciseToWorkout(0, benchPress)
+
+            assertFalse(populatedWorkouts!!.findExercise(0, 0)!!.isCompleted)
+
+            assertTrue(populatedWorkouts!!.markExerciseCompleted(0, 0))
+
+            assertTrue(populatedWorkouts!!.findExercise(0, 0)!!.isCompleted)
+        }
+
+        @Test
+        fun `markExerciseCompleted returns false when indexes are invalid`() {
+            val benchPress = Exercise("Bench Press", 3, 10, 60.0, "Chest")
+
+            populatedWorkouts!!.addExerciseToWorkout(0, benchPress)
+
+            assertFalse(populatedWorkouts!!.markExerciseCompleted(0, -1))
+            assertFalse(populatedWorkouts!!.markExerciseCompleted(0, 1))
+            assertFalse(populatedWorkouts!!.markExerciseCompleted(-1, 0))
+            assertFalse(populatedWorkouts!!.markExerciseCompleted(4, 0))
+            assertFalse(emptyWorkouts!!.markExerciseCompleted(0, 0))
+        }
+
+        @Test
+        fun `searchExercisesByName returns matching exercises when workout exists`() {
+            val benchPress = Exercise("Bench Press", 3, 10, 60.0, "Chest")
+            val shoulderPress = Exercise("Shoulder Press", 3, 8, 35.0, "Shoulders")
+
+            populatedWorkouts!!.addExerciseToWorkout(0, benchPress)
+            populatedWorkouts!!.addExerciseToWorkout(0, shoulderPress)
+
+            val searchResults = populatedWorkouts!!.searchExercisesByName(0, "Bench")
+
+            assertTrue(searchResults.contains("Bench Press"))
+            assertFalse(searchResults.contains("Shoulder Press"))
+        }
+
+        @Test
+        fun `searchExercisesByName ignores case when searching`() {
+            val benchPress = Exercise("Bench Press", 3, 10, 60.0, "Chest")
+
+            populatedWorkouts!!.addExerciseToWorkout(0, benchPress)
+
+            val searchResults = populatedWorkouts!!.searchExercisesByName(0, "bench")
+
+            assertTrue(searchResults.contains("Bench Press"))
+        }
+
+        @Test
+        fun `searchExercisesByName returns no exercises found when no match exists`() {
+            val benchPress = Exercise("Bench Press", 3, 10, 60.0, "Chest")
+
+            populatedWorkouts!!.addExerciseToWorkout(0, benchPress)
+
+            assertEquals("No exercises found", populatedWorkouts!!.searchExercisesByName(0, "Squat"))
+        }
+
+        @Test
+        fun `searchExercisesByName returns workout not found when workout index is invalid`() {
+            assertEquals("Workout not found", emptyWorkouts!!.searchExercisesByName(0, "Bench"))
+            assertEquals("Workout not found", populatedWorkouts!!.searchExercisesByName(-1, "Bench"))
+            assertEquals("Workout not found", populatedWorkouts!!.searchExercisesByName(4, "Bench"))
+        }
+    }
+
+    @Nested
     inner class DeleteWorkout {
 
         @Test
