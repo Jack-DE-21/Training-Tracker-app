@@ -9,7 +9,6 @@ import java.io.FileReader
 import java.io.FileWriter
 
 class XMLSerializer(private val file: File) : Serializer {
-
     @Throws(Exception::class)
     override fun write(obj: Any?) {
         val xstream = XStream(DomDriver())
@@ -19,8 +18,8 @@ class XMLSerializer(private val file: File) : Serializer {
                 Exercise::class.java,
                 ArrayList::class.java,
                 java.util.HashSet::class.java,
-                java.util.LinkedHashSet::class.java
-            )
+                java.util.LinkedHashSet::class.java,
+            ),
         )
 
         val outputStream = FileWriter(file)
@@ -41,8 +40,8 @@ class XMLSerializer(private val file: File) : Serializer {
                 Exercise::class.java,
                 ArrayList::class.java,
                 java.util.HashSet::class.java,
-                java.util.LinkedHashSet::class.java
-            )
+                java.util.LinkedHashSet::class.java,
+            ),
         )
 
         val inputStream = FileReader(file)

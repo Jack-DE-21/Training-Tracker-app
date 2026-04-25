@@ -6,7 +6,7 @@ data class Workout(
     var workoutType: String,
     var durationMinutes: Int,
     var isCompleted: Boolean = false,
-    var exercises: MutableSet<Exercise> = mutableSetOf()
+    var exercises: MutableSet<Exercise> = mutableSetOf(),
 ) {
     override fun toString(): String {
         val completedStatus = if (isCompleted) "Completed" else "Not Completed"
@@ -18,6 +18,6 @@ data class Workout(
             Duration: $durationMinutes minutes
             Status: $completedStatus
             Exercises: ${exercises.size}
-        """.trimIndent()
+            """.trimIndent()
     }
 }

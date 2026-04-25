@@ -2,11 +2,11 @@ import controllers.WorkoutAPI
 import models.Exercise
 import models.Workout
 import persistence.XMLSerializer
-import utils.readNextInt
-import utils.readNextLine
 import utils.isValidDoubleRange
 import utils.isValidRange
 import utils.readNextDouble
+import utils.readNextInt
+import utils.readNextLine
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -41,7 +41,7 @@ fun mainMenu(): Int {
         |  0) Exit                       |
         ----------------------------------
         ==>> 
-        """.trimIndent()
+        """.trimIndent(),
     )
 
     return readNextInt("")
@@ -68,23 +68,24 @@ fun runMenu() {
 
 fun exerciseMenu() {
     do {
-        val option = readNextInt(
-            """
-                
-            ----------------------------------
-            | EXERCISE MENU                  |
-            ----------------------------------
-            |  1) Add exercise to workout    |
-            |  2) List exercises in workout  |
-            |  3) Update exercise            |
-            |  4) Delete exercise            |
-            |  5) Mark exercise completed    |
-            |  6) Search exercises by name   |
-            |  0) Return to main menu        |
-            ----------------------------------
-            ==>> 
-            """.trimIndent()
-        )
+        val option =
+            readNextInt(
+                """
+                    
+                ----------------------------------
+                | EXERCISE MENU                  |
+                ----------------------------------
+                |  1) Add exercise to workout    |
+                |  2) List exercises in workout  |
+                |  3) Update exercise            |
+                |  4) Delete exercise            |
+                |  5) Mark exercise completed    |
+                |  6) Search exercises by name   |
+                |  0) Return to main menu        |
+                ----------------------------------
+                ==>> 
+                """.trimIndent(),
+            )
 
         when (option) {
             1 -> addExerciseToWorkout()
@@ -105,15 +106,16 @@ fun addWorkout() {
     val workoutType = readNextLine("Enter workout type: ")
     val durationMinutes = readValidDuration("Enter duration in minutes: ")
 
-    val isAdded = workoutAPI.add(
-        Workout(
-            workoutName = workoutName,
-            workoutDate = workoutDate,
-            workoutType = workoutType,
-            durationMinutes = durationMinutes,
-            isCompleted = false
+    val isAdded =
+        workoutAPI.add(
+            Workout(
+                workoutName = workoutName,
+                workoutDate = workoutDate,
+                workoutType = workoutType,
+                durationMinutes = durationMinutes,
+                isCompleted = false,
+            ),
         )
-    )
 
     if (isAdded) {
         println("Workout added successfully")
@@ -124,19 +126,20 @@ fun addWorkout() {
 
 fun listWorkouts() {
     if (workoutAPI.numberOfWorkouts() > 0) {
-        val option = readNextInt(
-            """
-            
-            ----------------------------------
-            | LIST WORKOUTS                  |
-            ----------------------------------
-            |  1) List all workouts          |
-            |  2) List completed workouts    |
-            |  3) List incomplete workouts   |
-            ----------------------------------
-            ==>> 
-            """.trimIndent()
-        )
+        val option =
+            readNextInt(
+                """
+                
+                ----------------------------------
+                | LIST WORKOUTS                  |
+                ----------------------------------
+                |  1) List all workouts          |
+                |  2) List completed workouts    |
+                |  3) List incomplete workouts   |
+                ----------------------------------
+                ==>> 
+                """.trimIndent(),
+            )
 
         when (option) {
             1 -> println(workoutAPI.listAllWorkouts())
@@ -161,16 +164,17 @@ fun updateWorkout() {
             val workoutType = readNextLine("Enter updated workout type: ")
             val durationMinutes = readValidDuration("Enter updated duration in minutes: ")
 
-            val isUpdated = workoutAPI.updateWorkout(
-                indexToUpdate,
-                Workout(
-                    workoutName = workoutName,
-                    workoutDate = workoutDate,
-                    workoutType = workoutType,
-                    durationMinutes = durationMinutes,
-                    isCompleted = false
+            val isUpdated =
+                workoutAPI.updateWorkout(
+                    indexToUpdate,
+                    Workout(
+                        workoutName = workoutName,
+                        workoutDate = workoutDate,
+                        workoutType = workoutType,
+                        durationMinutes = durationMinutes,
+                        isCompleted = false,
+                    ),
                 )
-            )
 
             if (isUpdated) {
                 println("Workout updated successfully")
@@ -239,17 +243,18 @@ fun addExerciseToWorkout() {
             val weightKg = readValidWeight("Enter weight in kg: ")
             val category = readNextLine("Enter exercise category: ")
 
-            val isAdded = workoutAPI.addExerciseToWorkout(
-                workoutIndex,
-                Exercise(
-                    exerciseName = exerciseName,
-                    sets = sets,
-                    reps = reps,
-                    weightKg = weightKg,
-                    category = category,
-                    isCompleted = false
+            val isAdded =
+                workoutAPI.addExerciseToWorkout(
+                    workoutIndex,
+                    Exercise(
+                        exerciseName = exerciseName,
+                        sets = sets,
+                        reps = reps,
+                        weightKg = weightKg,
+                        category = category,
+                        isCompleted = false,
+                    ),
                 )
-            )
 
             if (isAdded) {
                 println("Exercise added successfully")
@@ -289,18 +294,19 @@ fun updateExerciseInWorkout() {
         val category = readNextLine("Enter updated exercise category: ")
         val isCompleted = readNextLine("Is the exercise completed? yes/no: ").equals("yes", ignoreCase = true)
 
-        val isUpdated = workoutAPI.updateExerciseInWorkout(
-            workoutIndex,
-            exerciseIndex,
-            Exercise(
-                exerciseName = exerciseName,
-                sets = sets,
-                reps = reps,
-                weightKg = weightKg,
-                category = category,
-                isCompleted = isCompleted
+        val isUpdated =
+            workoutAPI.updateExerciseInWorkout(
+                workoutIndex,
+                exerciseIndex,
+                Exercise(
+                    exerciseName = exerciseName,
+                    sets = sets,
+                    reps = reps,
+                    weightKg = weightKg,
+                    category = category,
+                    isCompleted = isCompleted,
+                ),
             )
-        )
 
         if (isUpdated) {
             println("Exercise updated successfully")
@@ -359,7 +365,6 @@ fun searchExercisesByName() {
     }
 }
 
-
 fun readValidDuration(prompt: String): Int {
     var duration = readNextInt(prompt)
 
@@ -404,9 +409,6 @@ fun readValidWeight(prompt: String): Double {
     return weight
 }
 
-
-
-
 fun save() {
     try {
         workoutAPI.store()
@@ -429,4 +431,3 @@ fun exitApp() {
     println("Exiting app")
     exitProcess(0)
 }
-

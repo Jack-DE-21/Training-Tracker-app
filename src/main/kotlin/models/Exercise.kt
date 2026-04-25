@@ -6,7 +6,7 @@ data class Exercise(
     var reps: Int,
     var weightKg: Double,
     var category: String,
-    var isCompleted: Boolean = false
+    var isCompleted: Boolean = false,
 ) {
     override fun toString(): String {
         val completedStatus = if (isCompleted) "Completed" else "Not Completed"
@@ -18,6 +18,6 @@ data class Exercise(
             Weight: ${weightKg}kg
             Category: $category
             Status: $completedStatus
-        """.trimIndent()
+            """.trimIndent()
     }
 }
