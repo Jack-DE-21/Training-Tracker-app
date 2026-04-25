@@ -5,19 +5,28 @@ import models.Workout
 import persistence.Serializer
 import utils.isValidListIndex
 
+/**
+ * Manages the list of workouts for the Training Tracker App.
+ *
+ * This class handles adding, listing, updating, deleting, searching,
+ * saving, and loading workouts. It also manages exercises stored inside workouts.
+ *
+ * @property serializer The serializer used to save and load workout data.
+ * @constructor Creates a WorkoutAPI using the selected serializer.
+ */
 class WorkoutAPI(private var serializer: Serializer) {
-
     private var workouts = ArrayList<Workout>()
 
     @Throws(Exception::class)
     fun load() {
         val loadedWorkouts = serializer.read()
 
-        workouts = if (loadedWorkouts != null) {
-            loadedWorkouts as ArrayList<Workout>
-        } else {
-            ArrayList()
-        }
+        workouts =
+            if (loadedWorkouts is ArrayList<*>) {
+                ArrayList(loadedWorkouts.filterIsInstance<Workout>())
+            } else {
+                ArrayList()
+            }
     }
 
     @Throws(Exception::class)
@@ -25,6 +34,12 @@ class WorkoutAPI(private var serializer: Serializer) {
         serializer.write(workouts)
     }
 
+    /**
+     * Adds a new [Workout] to the workout list.
+     *
+     * @param workout The workout to add.
+     * @return `true` if the workout was added successfully, `false` otherwise.
+     */
     fun add(workout: Workout): Boolean {
         return workouts.add(workout)
     }
@@ -62,9 +77,10 @@ class WorkoutAPI(private var serializer: Serializer) {
     }
 
     fun listWorkoutsByType(workoutType: String): String {
-        val matchingWorkouts = workouts.filter { workout ->
-            workout.workoutType.equals(workoutType, ignoreCase = true)
-        }
+        val matchingWorkouts =
+            workouts.filter { workout ->
+                workout.workoutType.equals(workoutType, ignoreCase = true)
+            }
 
         return if (matchingWorkouts.isEmpty()) {
             "No workouts stored with type: $workoutType"
@@ -74,9 +90,10 @@ class WorkoutAPI(private var serializer: Serializer) {
     }
 
     fun searchWorkoutsByName(searchString: String): String {
-        val matchingWorkouts = workouts.filter { workout ->
-            workout.workoutName.contains(searchString, ignoreCase = true)
-        }
+        val matchingWorkouts =
+            workouts.filter { workout ->
+                workout.workoutName.contains(searchString, ignoreCase = true)
+            }
 
         return if (matchingWorkouts.isEmpty()) {
             "No workouts found"
@@ -93,7 +110,10 @@ class WorkoutAPI(private var serializer: Serializer) {
         }
     }
 
-    fun updateWorkout(indexToUpdate: Int, workout: Workout): Boolean {
+    fun updateWorkout(
+        indexToUpdate: Int,
+        workout: Workout,
+    ): Boolean {
         val foundWorkout = findWorkout(indexToUpdate)
 
         return if (foundWorkout != null) {
@@ -127,7 +147,10 @@ class WorkoutAPI(private var serializer: Serializer) {
         }
     }
 
-    fun addExerciseToWorkout(workoutIndex: Int, exercise: Exercise): Boolean {
+    fun addExerciseToWorkout(
+        workoutIndex: Int,
+        exercise: Exercise,
+    ): Boolean {
         val foundWorkout = findWorkout(workoutIndex)
 
         return if (foundWorkout != null) {
@@ -155,7 +178,10 @@ class WorkoutAPI(private var serializer: Serializer) {
         }
     }
 
-    fun findExercise(workoutIndex: Int, exerciseIndex: Int): Exercise? {
+    fun findExercise(
+        workoutIndex: Int,
+        exerciseIndex: Int,
+    ): Exercise? {
         val foundWorkout = findWorkout(workoutIndex)
 
         return if (
@@ -168,7 +194,11 @@ class WorkoutAPI(private var serializer: Serializer) {
         }
     }
 
-    fun updateExerciseInWorkout(workoutIndex: Int, exerciseIndex: Int, exercise: Exercise): Boolean {
+    fun updateExerciseInWorkout(
+        workoutIndex: Int,
+        exerciseIndex: Int,
+        exercise: Exercise,
+    ): Boolean {
         val foundExercise = findExercise(workoutIndex, exerciseIndex)
 
         return if (foundExercise != null) {
@@ -184,7 +214,10 @@ class WorkoutAPI(private var serializer: Serializer) {
         }
     }
 
-    fun markExerciseCompleted(workoutIndex: Int, exerciseIndex: Int): Boolean {
+    fun markExerciseCompleted(
+        workoutIndex: Int,
+        exerciseIndex: Int,
+    ): Boolean {
         val foundExercise = findExercise(workoutIndex, exerciseIndex)
 
         return if (foundExercise != null) {
@@ -195,15 +228,19 @@ class WorkoutAPI(private var serializer: Serializer) {
         }
     }
 
-    fun searchExercisesByName(workoutIndex: Int, searchString: String): String {
+    fun searchExercisesByName(
+        workoutIndex: Int,
+        searchString: String,
+    ): String {
         val foundWorkout = findWorkout(workoutIndex)
 
         return if (foundWorkout == null) {
             "Workout not found"
         } else {
-            val matchingExercises = foundWorkout.exercises.filter { exercise ->
-                exercise.exerciseName.contains(searchString, ignoreCase = true)
-            }
+            val matchingExercises =
+                foundWorkout.exercises.filter { exercise ->
+                    exercise.exerciseName.contains(searchString, ignoreCase = true)
+                }
 
             if (matchingExercises.isEmpty()) {
                 "No exercises found"
@@ -213,7 +250,10 @@ class WorkoutAPI(private var serializer: Serializer) {
         }
     }
 
-    fun deleteExerciseFromWorkout(workoutIndex: Int, exerciseIndex: Int): Exercise? {
+    fun deleteExerciseFromWorkout(
+        workoutIndex: Int,
+        exerciseIndex: Int,
+    ): Exercise? {
         val foundWorkout = findWorkout(workoutIndex)
         val foundExercise = findExercise(workoutIndex, exerciseIndex)
 

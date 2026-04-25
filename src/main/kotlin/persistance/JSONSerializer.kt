@@ -9,7 +9,6 @@ import java.io.FileReader
 import java.io.FileWriter
 
 class JSONSerializer(private val file: File) : Serializer {
-
     @Throws(Exception::class)
     override fun write(obj: Any?) {
         val xstream = XStream(JettisonMappedXmlDriver())
